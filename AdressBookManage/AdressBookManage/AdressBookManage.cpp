@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <sstream>
 
 namespace {
     const std::string helpInfo[10] = {
@@ -69,6 +70,7 @@ void AddPerson(AddressBooks* abs)
     std::cout << "请输入姓名： " << std::endl;
     std::cin >> tempName;
     abs->personArray[abs->number].name = tempName;
+    std::getline(std::cin, tempName);
 
     std::cout << "请输入性别：" << std::endl;
     std::cout << "1 --- 男" << std::endl;
@@ -94,14 +96,18 @@ void AddPerson(AddressBooks* abs)
     }
 
     std::cout << "请输入年龄：" << std::endl;
+    std::string cinAge("");
+    std::stringstream sstream;
     int tempAge = 0;
     while (true)
     {
-        std::cin >> tempAge;
-        if (std::cin.fail())
+        std::cin >> cinAge;
+        sstream << cinAge;
+        sstream >> tempAge;
+        sstream.clear();
+        sstream.str("");
+        if (tempAge <= 0)
         {
-            char buff;
-            while ((buff = getchar()) != '\n');
             std::cout << "年龄输入错误，请重新输入!" << std::endl;
         }
         else
@@ -115,14 +121,34 @@ void AddPerson(AddressBooks* abs)
     std::string tempPhone{ "" };
     std::cin >> tempPhone;
     abs->personArray[abs->number].phone = tempPhone;
+    std::getline(std::cin, tempPhone);
 
     std::cout << "请输入住址：" << std::endl;
     std::string tempAdress{ "" };
     std::cin >> tempAdress;
     abs->personArray[abs->number].addr = tempAdress;
+    std::getline(std::cin, tempAdress);
 
     abs->number++;
     std::cout << "添加\"" << tempName << "\"成功" << std::endl;
+}
+
+// 显示所有联系人
+void ShowAllPerson(AddressBooks* abs)
+{
+    if (abs->number <= 0)
+    {
+        std::cout << "当前通讯录为空！" << std::endl;
+        return;
+    }
+    for (int i = 0; i < abs->number; i++)
+    {
+        std::cout << "姓名：" << abs->personArray[i].name << "\t";
+        std::cout << "性别：" << (abs->personArray[i].sex == 1 ? "男": "女") << "\t";
+        std::cout << "年龄：" << abs->personArray[i].age << "\t";
+        std::cout << "电话：" << abs->personArray[i].phone << "\t";
+        std::cout << "住址：" << abs->personArray[i].addr << std::endl;
+    }
 }
 
 bool ExcuteCommand(const int& command, AddressBooks* abs)
@@ -130,6 +156,10 @@ bool ExcuteCommand(const int& command, AddressBooks* abs)
     bool rel = true;
     do 
     {
+        if (abs == nullptr)
+        {
+            rel = false;
+        }
         switch (command)
         {
         case 0:             // 退出程序
@@ -140,6 +170,11 @@ bool ExcuteCommand(const int& command, AddressBooks* abs)
         case 1:             // 添加联系人
         {
             AddPerson(abs);
+            break;
+        }
+        case 2:             // 显示联系人
+        {
+            ShowAllPerson(abs);
             break;
         }
         case 7:
